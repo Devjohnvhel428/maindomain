@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { doc, setDoc, getDoc } from "firebase/firestore"; // Added getDoc for checking user existence
 import { auth, db } from "./firebase";
 
 function LoginPage() {
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -32,8 +34,15 @@ function LoginPage() {
       document.cookie = `uid=${user.uid}; domain=enviroaitest.com; path=/`;
       document.cookie = `email=${user.email}; domain=enviroaitest.com; path=/`;
 
-      // Navigate to the home page
-      navigate("/");
+      //get redirect parameter
+      const queryParams = new URLSearchParams(location.search);
+      const redirectParam = queryParams.get("redirect");
+      if(redirectParam === "3d") {
+        window.location.href = "http://3d.enviroaitest.com/";
+      } else {
+        // Navigate to the home page
+        navigate("/");
+      }
     } catch (err) {
       // Handle errors (e.g., invalid credentials)
       setError(err.message);
