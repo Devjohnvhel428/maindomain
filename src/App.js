@@ -5,6 +5,7 @@ import { auth } from "./firebase.js";
 import LoginPage from "./LoginPage.js";
 import SignupPage from "./SignupPage.js";
 import MainPage from "./MainPage.js";
+import Logout from "./Logout.js";
 import "./App.css";
 
 function App() {
@@ -37,6 +38,10 @@ function App() {
         <Route
           path="/login"
           element={!user ? <LoginPage /> : <Navigate to="/home" />}
+        />
+        <Route
+          path="/logout"
+          element={<Logout />}
         />
         <Route
           path="/signup"

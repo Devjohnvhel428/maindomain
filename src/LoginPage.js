@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore"; // Added getDoc for checking user existence
 import { auth, db } from "./firebase";
 
@@ -37,7 +38,8 @@ function LoginPage() {
       //get redirect parameter
       const queryParams = new URLSearchParams(location.search);
       const redirectParam = queryParams.get("redirect");
-      if(redirectParam === "3d") {
+      const targetParam = queryParams.get("target");
+      if(redirectParam === "3d" || targetParam === "3d") {
         window.location.href = "http://3d.enviroaitest.com/";
       } else {
         // Navigate to the home page
@@ -48,6 +50,24 @@ function LoginPage() {
       setError(err.message);
     }
   };
+
+  useEffect(()=>{
+    const logout = async()=>{
+      try {
+            // Sign out the user using Firebase Authentication
+            await signOut(auth);
+            document.cookie = "uid=; domain=enviroaitest.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            document.cookie = "email=; domain=enviroaitest.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+          } catch (error) {
+            console.error("Error logging out:", error);
+          }
+      }
+      const queryParams = new URLSearchParams(location.search);
+      const targetParam = queryParams.get("target");
+      if(targetParam === "3d") {
+        logout();
+      }
+  })
 
   return (
     <div>
