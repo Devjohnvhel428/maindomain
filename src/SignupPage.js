@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { auth } from "./firebase";
 
 function SignupPage() {
@@ -11,7 +12,19 @@ function SignupPage() {
 
   const handleSignup = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const data = await createUserWithEmailAndPassword(auth, email, password);
+      const user = data.user;
+      // Request a custom token from the backend using axios
+      const response = await axios.post("http://localhost:5000/generateCustomToken", {
+        uid: user.uid,
+      });
+      const { customToken } = response.data;
+      // Set cookies for UID and email
+      if(process.env.REACT_APP_ENVIRONMENT === "dev") {
+        document.cookie = `authToken=${customToken}; path=/; domain=localhost;`;
+      } else {
+        document.cookie = `authToken=${customToken}; path=/; domain=enviroaitest;`;
+      }
       navigate("/");
     } catch (err) {
       setError(err.message);

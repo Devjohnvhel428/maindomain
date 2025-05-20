@@ -7,8 +7,11 @@ function MainPage() {
     try {
       // Sign out the user using Firebase Authentication
       await signOut(auth);
-      document.cookie = "uid=; domain=enviroaitest.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      document.cookie = "email=; domain=enviroaitest.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      if(process.env.REACT_APP_ENVIRONMENT === "dev") {
+        document.cookie = `authToken=; path=/; domain=localhost;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+      } else {
+        document.cookie = `authToken=; path=/; domain=enviroaitest;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+      }
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -16,7 +19,7 @@ function MainPage() {
 
   const handleRedirect = () => {
     // Open localhost:3001 in a new tab
-    window.open("http://3d.enviroaitest.com/", "_blank");
+    window.open("http://localhost:5173", "_blank");
   };
 
   return (

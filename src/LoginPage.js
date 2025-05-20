@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore"; // Added getDoc for checking user existence
-import { auth, db } from "./firebase";
+import axios from "axios";
+import { auth } from "./firebase";
 
 function LoginPage() {
   const location = useLocation();
@@ -16,31 +16,31 @@ function LoginPage() {
   const handleLogin = async () => {
     try {
       // Authenticate the user
+      await setPersistence(auth, browserLocalPersistence);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      // Check if the user already exists in Firestore
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        // If the user does not exist, add them to Firestore
-        await setDoc(userDocRef, {
-          uid: user.uid,
-          email: user.email,
-        });
-      }
-
+      // Request a custom token from the backend using axios
+      const response = await axios.post("http://localhost:5000/generateCustomToken", {
+        uid: user.uid,
+      });
+      const { customToken } = response.data;
       // Set cookies for UID and email
-      document.cookie = `uid=${user.uid}; domain=enviroaitest.com; path=/`;
-      document.cookie = `email=${user.email}; domain=enviroaitest.com; path=/`;
+      if(process.env.REACT_APP_ENVIRONMENT === "dev") {
+        document.cookie = `authToken=${customToken}; path=/; domain=localhost;`;
+      } else {
+        document.cookie = `authToken=${customToken}; path=/; domain=enviroaitest;`;
+      }
 
       //get redirect parameter
       const queryParams = new URLSearchParams(location.search);
       const redirectParam = queryParams.get("redirect");
       const targetParam = queryParams.get("target");
       if(redirectParam === "3d" || targetParam === "3d") {
-        window.location.href = "http://3d.enviroaitest.com/";
+        if(process.env.REACT_APP_ENVIRONMENT === "dev") {
+          window.location.href = "http://localhost:5173";
+        } else {
+          window.location.href = "http://3d.enviroaitest.com/";
+        }
       } else {
         // Navigate to the home page
         navigate("/");
@@ -56,8 +56,11 @@ function LoginPage() {
       try {
             // Sign out the user using Firebase Authentication
             await signOut(auth);
-            document.cookie = "uid=; domain=enviroaitest.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            document.cookie = "email=; domain=enviroaitest.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            if(process.env.REACT_APP_ENVIRONMENT === "dev") {
+              document.cookie = `authToken=; path=/; domain=localhost;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+            } else {
+              document.cookie = `authToken=; path=/; domain=enviroaitest;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+            }
           } catch (error) {
             console.error("Error logging out:", error);
           }
