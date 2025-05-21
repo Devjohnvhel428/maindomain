@@ -20,7 +20,7 @@ function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       // Request a custom token from the backend using axios
-      const response = await axios.post("http://localhost:5000/generateCustomToken", {
+      const response = await axios.post("http://enviroaitest.com:5000/generateCustomToken", {
         uid: user.uid,
       });
       const { customToken } = response.data;
