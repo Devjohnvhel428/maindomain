@@ -23,7 +23,7 @@ function SignupPage() {
       if(process.env.REACT_APP_ENVIRONMENT === "dev") {
         document.cookie = `authToken=${customToken}; path=/; domain=localhost;`;
       } else {
-        document.cookie = `authToken=${customToken}; path=/; domain=enviroaitest;`;
+        document.cookie = `authToken=${customToken}; path=/; domain=enviroaitest.com;`;
       }
       navigate("/");
     } catch (err) {

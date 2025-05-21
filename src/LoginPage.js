@@ -28,7 +28,7 @@ function LoginPage() {
       if(process.env.REACT_APP_ENVIRONMENT === "dev") {
         document.cookie = `authToken=${customToken}; path=/; domain=localhost;`;
       } else {
-        document.cookie = `authToken=${customToken}; path=/; domain=enviroaitest;`;
+        document.cookie = `authToken=${customToken}; path=/; domain=enviroaitest.com;`;
       }
 
       //get redirect parameter
@@ -59,7 +59,7 @@ function LoginPage() {
             if(process.env.REACT_APP_ENVIRONMENT === "dev") {
               document.cookie = `authToken=; path=/; domain=localhost;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
             } else {
-              document.cookie = `authToken=; path=/; domain=enviroaitest;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+              document.cookie = `authToken=; path=/; domain=enviroaitest.com;  expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
             }
           } catch (error) {
             console.error("Error logging out:", error);
