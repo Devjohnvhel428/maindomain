@@ -19,7 +19,7 @@ function MainPage() {
 
   const handleRedirect = () => {
     // Open localhost:3001 in a new tab
-    window.open("http://localhost:5173", "_blank");
+    window.open("http://3d.enviroaitest.com/", "_blank");
   };
 
   return (
